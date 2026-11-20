@@ -1,0 +1,36 @@
+name: Build and Publish .NET Application
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore dependencies
+        run: dotnet restore Laboratorio14-JordyGomez.csproj
+
+      - name: Build application in Release
+        run: dotnet build Laboratorio14-JordyGomez.csproj -c Release --no-restore
+
+      - name: Publish application
+        run: dotnet publish Laboratorio14-JordyGomez.csproj -c Release --no-build -o published
+
+      - name: Upload published files
+        uses: actions/upload-artifact@v7
+        with:
+          name: lab14-published
+          path: published/
+          if-no-files-found: error
